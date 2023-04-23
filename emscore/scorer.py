@@ -10,7 +10,7 @@ import time
 from collections import defaultdict
 
 
-from .utils import em_cos_score, get_idf_dict
+from utils import em_cos_score, get_idf_dict
 
 class EMScorer:
     """
@@ -69,6 +69,9 @@ class EMScorer:
                 print("preparing IDF dict...")
             start = time.perf_counter()
             idf_corpus = refs if refs else cands
+
+            #在这里计算idf，调用get_idf_dict函数
+            print("计算idf")
             idf_dict = get_idf_dict(idf_corpus, self._tokenizer, nthreads=nthreads)
             # max token_id are eos token id
             # set idf of eos token are mean idf value
@@ -76,7 +79,7 @@ class EMScorer:
             if verbose:
                 print("done in {:.2f} seconds".format(time.perf_counter() - start))
 
-        
+        #开始计算EMScore
         if verbose:
             print("calculating EMScore scores...")
             time_start = time.perf_counter()

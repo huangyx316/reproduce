@@ -15,6 +15,7 @@ from collections import defaultdict, Counter
 from multiprocessing import Pool
 from functools import partial
 from itertools import chain
+from transformers import AutoTokenizer, AutoModel
 
 def compute_correlation_uniquehuman(pred, all_human_scores):
     num_workers = 3
@@ -120,8 +121,31 @@ def encode_text(vid_caps, model, tokenizer, idf_dict, device):
 
 def process(a, tokenizer=None):
     if tokenizer is not None:
-        a = tokenizer(a)[0].tolist()
-    return set(a)
+        print(tokenizer)
+        print("输入一个文本内容 给process进行 tokenizer处理之后输出的数据是什么类型？")
+        print("处理前")
+        print(a)
+        print(type(a))
+        
+        print("-----------")
+        a1 = tokenizer(a)[0].tolist()
+        print("处理后")
+        print(a1)
+        print(type(a1))
+        print(len(a1))
+        #试试看换成unixcoder模型怎么得到相同的结果
+        tokenizer1=AutoTokenizer.from_pretrained('microsoft/codebert-base')
+        sentence = "This is an example sentence."
+
+        a2 = tokenizer1.encode(a, add_special_tokens=True, return_tensors="pt").tolist()[0]
+
+        #a1 = tokenizer1.encode(a)
+        print("--------换成unixcoder")
+        
+        print(a2)
+        print(type(a2))
+        print(len(a2))
+    return set(a1)
 
 
 def get_idf_dict(arr, tokenizer, nthreads=4):
@@ -269,6 +293,8 @@ def em_cos_score(
     text_global_stats_dict = dict()
     for batch_start in iter_range:
         sen_batch = sentences[batch_start: batch_start + batch_size]
+
+        #实际处理文本内容在这里调用encode_text
         embs, masks, text_idfs = encode_text(sen_batch, model, tokenizer, idf_dict, device=device)
         embs = embs.cpu()
         masks = masks.cpu()
