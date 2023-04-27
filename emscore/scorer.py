@@ -68,14 +68,25 @@ class EMScorer:
             if verbose:
                 print("preparing IDF dict...")
             start = time.perf_counter()
+
+            #这里计算idf corpus的时候值计算reference
             idf_corpus = refs if refs else cands
 
+            print("输出计算idf的idf corpus：")
+            print(idf_corpus)
+
             #在这里计算idf，调用get_idf_dict函数
-            print("计算idf")
+            
             idf_dict = get_idf_dict(idf_corpus, self._tokenizer, nthreads=nthreads)
+            print("计算idf")
+            print(idf_dict)
+            print(len(idf_dict))
+
             # max token_id are eos token id
             # set idf of eos token are mean idf value
             idf_dict[max(list(idf_dict.keys()))] = sum(list(idf_dict.values()))/len(list(idf_dict.values()))
+            print(idf_dict)
+            print(len(idf_dict))
             if verbose:
                 print("done in {:.2f} seconds".format(time.perf_counter() - start))
 
